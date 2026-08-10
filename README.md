@@ -1,8 +1,16 @@
 # 🚌 Belagavi City Bus Transit
 
-A full-stack public transportation management platform for Belagavi, Karnataka. The project provides live bus telemetry simulation, route and stop discovery, ETA assistance, role-based dashboards, depot operations, announcements, analytics, and a Gemini-powered transit assistant.
+A full-stack public transportation management platform for Belagavi, Karnataka. The platform is being developed as a portfolio-grade smart transit system connecting commuters, drivers, depot administrators, and system administrators.
 
-> **Portfolio project:** This repository is being developed incrementally with documented milestones, testing, CI, and deployment improvements.
+It combines bus and route discovery, telemetry simulation, ETA assistance, operational dashboards, announcements, analytics, and an AI transit assistant.
+
+> **Development status:** Active portfolio project. Features are being implemented incrementally through documented milestones.
+
+## 🎯 Problem Statement
+
+Public bus users often lack a single place to discover routes, check service information, understand expected arrival times, and receive timely announcements. Transit operators also need operational tools for fleet, route, driver, and service management.
+
+Belagavi City Bus Transit aims to provide a unified digital platform for both sides of the transit ecosystem.
 
 ## ✨ Core Features
 
@@ -16,9 +24,31 @@ A full-stack public transportation management platform for Belagavi, Karnataka. 
 - 🤖 Gemini AI transit assistant
 - 📊 Operations and passenger analytics
 - 🔐 Role-oriented access flows and audit logs
-- 🗄️ Prisma/PostgreSQL/PostGIS schema for future persistent storage
+- 🗄️ Prisma/PostgreSQL/PostGIS data model
 - 🐳 Docker Compose configuration
 - ⚙️ GitHub Actions CI pipeline
+
+## 🏗️ Architecture
+
+```text
+Users
+  │
+  ▼
+React + TypeScript + Vite
+  │
+  ▼
+Node.js + Express API
+  ├──────────────► Gemini AI
+  │
+  ▼
+PostgreSQL + Prisma + PostGIS
+  │
+  ▼
+Transit, fleet, schedule, telemetry,
+notification and audit data
+```
+
+See the detailed [system architecture](docs/architecture.md).
 
 ## 🧰 Technology Stack
 
@@ -28,7 +58,7 @@ A full-stack public transportation management platform for Belagavi, Karnataka. 
 | Maps | Leaflet |
 | Backend | Node.js, Express |
 | AI | Google Gemini API |
-| Database | PostgreSQL, PostGIS, Prisma schema |
+| Database | PostgreSQL, PostGIS, Prisma |
 | Build | Vite, esbuild, TypeScript |
 | DevOps | Docker Compose, GitHub Actions |
 
@@ -46,13 +76,15 @@ Manage buses, routes, drivers, announcements and depot operations.
 ### Super Admin
 Review system-wide analytics, audit activity and fleet information.
 
-## 🚀 Local Setup
+## 🚀 Local Development
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 20+ recommended
 - npm
-- Optional: Docker Desktop for database/container development
+- Git
+- PostgreSQL when persistent database features are enabled
+- Gemini API key when AI API access is enabled
 
 ### Install
 
@@ -62,13 +94,13 @@ npm install
 
 ### Environment
 
-Copy `.env.example` to `.env` and add your Gemini API key if AI API access is required.
+Copy `.env.example` to `.env` and provide the values required by the features you enable.
 
 ```bash
 cp .env.example .env
 ```
 
-Never commit `.env` or API keys.
+Never commit `.env`, passwords, tokens, or API keys.
 
 ### Run
 
@@ -76,14 +108,14 @@ Never commit `.env` or API keys.
 npm run dev
 ```
 
-The application is served on port `3000`.
-
 ### Validate
 
 ```bash
 npm run lint
 npm run build
 ```
+
+For more details, see [Development Guide](docs/development.md).
 
 ## 🔌 API Overview
 
@@ -106,22 +138,26 @@ npm run build
 | POST | `/api/ai/predict-eta` | ETA prediction demo |
 | POST | `/api/ai/route-recommend` | Route recommendation demo |
 
-## 🗂️ Project Structure
+> API availability should be verified against the currently implemented server routes as the application source is migrated and tested.
+
+## 📂 Repository Structure
 
 ```text
 belagavi-city-bus-transit/
-├── .github/workflows/ci.yml
-├── prisma/schema.prisma
+├── .github/workflows/
+├── docs/
+│   ├── architecture.md
+│   ├── development.md
+│   └── roadmap.md
+├── prisma/
 ├── src/
-│   ├── components/
-│   ├── data/
-│   ├── App.tsx
-│   ├── index.css
-│   ├── main.tsx
-│   └── types.ts
 ├── .env.example
+├── .gitignore
+├── CONTRIBUTING.md
 ├── docker-compose.yml
+├── LICENSE
 ├── package.json
+├── README.md
 ├── server.ts
 ├── tsconfig.json
 └── vite.config.ts
@@ -129,23 +165,28 @@ belagavi-city-bus-transit/
 
 ## 🛣️ Roadmap
 
-- [x] Initial commuter, driver and admin dashboards
-- [x] Live telemetry simulation
-- [x] Route and schedule data
-- [x] Gemini assistant integration
-- [x] Analytics views
-- [ ] Persistent PostgreSQL/PostGIS integration
-- [ ] Production authentication and secure sessions
-- [ ] Real GPS device ingestion
-- [ ] WebSocket/SSE production telemetry stream
-- [ ] Automated API and UI tests
-- [ ] Production deployment
-- [ ] PWA/mobile experience
+See the complete roadmap in [docs/roadmap.md](docs/roadmap.md).
 
-## 🔒 Security Notes
+Current priorities:
 
-This repository contains demo/mock data. Authentication and telemetry are currently designed for demonstration and development. Production deployment should add secure authentication, authorization, validation, rate limiting, secret management, database persistence and real observability.
+- Live transit core
+- Route and stop search
+- Bus schedules and ETA
+- Driver and depot operations
+- Notifications and announcements
+- AI transit assistance
+- Analytics
+- Automated testing and CI/CD
+- Production database and deployment
+
+## 🔒 Security
+
+This project currently contains demo/mock transit data and is under active development. Production deployment must include secure authentication, authorization, input validation, rate limiting, secret management, persistent database security, auditability, and observability.
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and commit conventions.
 
 ## 📄 License
 
-MIT License.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
