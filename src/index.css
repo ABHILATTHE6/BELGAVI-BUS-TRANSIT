@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+.leaflet-div-icon.custom-bus-marker,
+.leaflet-div-icon.custom-stop-icon,
+.leaflet-div-icon.custom-depot-icon {
+  background: transparent !important;
+  border: none !important;
+}

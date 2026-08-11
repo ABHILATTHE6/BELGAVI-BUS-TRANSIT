@@ -1,0 +1,6 @@
+{
+  "name": "Belagavi City Bus Service",
+  "description": "Real-time NWKRTC Belagavi city bus tracking, live GPS map, route planner, ETAs, fare calculator and AI transit assistant.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

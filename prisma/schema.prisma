@@ -1,0 +1,263 @@
+// BUS TRANSIT - Enterprise Bus Transit Management Database Schema
+// PostgreSQL with PostGIS extensions for geographical transit telemetry
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+enum Role {
+  COMMUTER
+  DRIVER
+  DEPOT_ADMIN
+  SUPER_ADMIN
+}
+
+enum BusStatus {
+  IN_TRANSIT
+  AT_STOP
+  DELAYED
+  OUT_OF_SERVICE
+  MAINTENANCE
+}
+
+enum CrowdingLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum PriorityLevel {
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model User {
+  id                  String         @id @default(uuid())
+  email               String         @unique
+  passwordHash        String
+  name                String
+  phone               String?
+  role                Role           @default(COMMUTER)
+  avatar              String?
+  driverLicenseNumber String?
+  assignedDepotId     String?
+  assignedDepot       Depot?         @relation("DepotDrivers", fields: [assignedDepotId], references: [id])
+  assignedBusId       String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  favorites           Favorite[]
+  tripHistories       TripHistory[]
+  auditLogs           AuditLog[]
+  schedules           Schedule[]
+  busesDriven         Bus[]          @relation("DriverBuses")
+  notifications       Notification[]
+
+  @@map("users")
+}
+
+model Depot {
+  id                String         @id @default(uuid())
+  code              String         @unique
+  name              String
+  city              String
+  lat               Float
+  lng               Float
+  capacity          Int
+  managerName       String
+  contactPhone      String
+  status            String         @default("operational")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  buses             Bus[]
+  drivers           User[]         @relation("DepotDrivers")
+  announcements     Announcement[]
+
+  @@map("depots")
+}
+
+model Route {
+  id               String      @id @default(uuid())
+  code             String      @unique
+  name             String
+  color            String
+  startStop        String
+  endStop          String
+  totalDistanceKm  Float
+  avgDurationMin   Int
+  fareStandard     Float
+  fareExpress      Float
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  stops            RouteStop[]
+  buses            Bus[]
+  schedules        Schedule[]
+
+  @@map("routes")
+}
+
+model Stop {
+  id                 String      @id @default(uuid())
+  code               String      @unique
+  name               String
+  lat                Float
+  lng                Float
+  hubName            String?
+  isMajorHub         Boolean     @default(false)
+  avgStopDurationSec Int         @default(60)
+  createdAt          DateTime    @default(now())
+  routeStops         RouteStop[]
+
+  @@map("stops")
+}
+
+model RouteStop {
+  id       String @id @default(uuid())
+  routeId  String
+  stopId   String
+  sequence Int
+  route    Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  stop     Stop   @relation(fields: [stopId], references: [id], onDelete: Cascade)
+
+  @@unique([routeId, stopId])
+  @@map("route_stops")
+}
+
+model Bus {
+  id                 String        @id @default(uuid())
+  fleetNumber        String        @unique
+  licensePlate       String        @unique
+  model              String
+  capacity           Int
+  currentPassengers  Int           @default(0)
+  routeId            String?
+  depotId            String?
+  driverId           String?
+  status             BusStatus     @default(OUT_OF_SERVICE)
+  currentLat         Float
+  currentLng         Float
+  speed              Float         @default(0.0)
+  heading            Float         @default(0.0)
+  nextStopId         String?
+  etaToNextStopMin   Int           @default(0)
+  crowdingLevel      CrowdingLevel @default(LOW)
+  fuelLevel          Int           @default(100)
+  lastUpdated        DateTime      @default(now())
+  route              Route?        @relation(fields: [routeId], references: [id])
+  depot              Depot?        @relation(fields: [depotId], references: [id])
+  driver             User?         @relation("DriverBuses", fields: [driverId], references: [id])
+  telemetryLogs      TelemetryLog[]
+  schedules          Schedule[]
+
+  @@map("buses")
+}
+
+model TelemetryLog {
+  id        String   @id @default(uuid())
+  busId     String
+  lat       Float
+  lng       Float
+  speed     Float
+  heading   Float
+  timestamp DateTime @default(now())
+  bus       Bus      @relation(fields: [busId], references: [id], onDelete: Cascade)
+
+  @@index([busId, timestamp])
+  @@map("telemetry_logs")
+}
+
+model Schedule {
+  id               String   @id @default(uuid())
+  routeId          String
+  busId            String
+  driverId         String
+  departureTime    String
+  arrivalTime      String
+  status           String   @default("scheduled")
+  frequencyMinutes Int      @default(15)
+  route            Route    @relation(fields: [routeId], references: [id])
+  bus              Bus      @relation(fields: [busId], references: [id])
+  driver           User     @relation(fields: [driverId], references: [id])
+
+  @@map("schedules")
+}
+
+model Announcement {
+  id         String        @id @default(uuid())
+  title      String
+  content    String        @db.Text
+  priority   PriorityLevel @default(NORMAL)
+  targetRole String        @default("all")
+  depotId    String?
+  author     String
+  category   String        @default("general")
+  createdAt  DateTime      @default(now())
+  depot      Depot?        @relation(fields: [depotId], references: [id])
+
+  @@map("announcements")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  userId     String?
+  title      String
+  message    String
+  type       String
+  read       Boolean  @default(false)
+  targetRole String?
+  timestamp  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  type       String   // "route" or "stop"
+  targetId   String
+  targetName String
+  targetCode String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("favorites")
+}
+
+model TripHistory {
+  id             String   @id @default(uuid())
+  userId         String
+  routeCode      String
+  routeName      String
+  busFleetNumber String
+  fromStop       String
+  toStop         String
+  fare           Float
+  status         String   @default("completed")
+  timestamp      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("trip_histories")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  userId    String
+  userName  String
+  role      Role
+  target    String
+  details   String
+  ipAddress String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
