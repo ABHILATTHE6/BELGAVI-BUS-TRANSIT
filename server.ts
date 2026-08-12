@@ -77,17 +77,30 @@ setInterval(() => {
 
 // Health & System Info
 app.get('/api/health', (req, res) => {
-  res.json({
+  const health = {
     status: 'online',
     system: 'Belagavi City Bus Service NWKRTC Telemetry Server',
     version: '1.0.0-belagavi',
     uptimeSec: Math.floor(process.uptime()),
     activeBuses: currentBuses.length,
     telemetrySimulator: isSimulatingTelemetry ? 'active' : 'paused',
-    databaseConnection: 'healthy (PostgreSQL / PostGIS Belagavi Spatial Index)',
-    redisCluster: 'connected',
-    mqttBroker: 'connected (tcp://localhost:1883)',
-  });
+    services: {
+      database: {
+        status: 'not_configured',
+        provider: 'PostgreSQL / PostGIS',
+        mode: 'in-memory-mock-data',
+      },
+      redis: {
+        status: 'not_configured',
+      },
+      mqtt: {
+        status: 'not_configured',
+        broker: 'tcp://localhost:1883',
+      },
+    },
+  };
+
+  res.status(200).json(health);
 });
 
 // Authentication
