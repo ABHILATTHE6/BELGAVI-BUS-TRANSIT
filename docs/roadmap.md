@@ -11,43 +11,50 @@
 
 ## Phase 2 — Transit Core
 
-- [ ] Live bus telemetry
-- [ ] Route and stop search
-- [ ] Bus schedules
-- [ ] ETA presentation
-- [ ] Service status
+- [x] Live telemetry simulation
+- [x] Route discovery
+- [x] Schedule data
+- [x] ETA presentation
+- [ ] Production GPS telemetry integration
+- [ ] Production service-status feed
 
 ## Phase 3 — Operations
 
-- [ ] Driver workflow
-- [ ] Depot fleet management
-- [ ] Route assignment
-- [ ] Announcements
-- [ ] Notifications
-- [ ] Audit logging
+- [x] Driver workflow
+- [x] Depot fleet management UI
+- [x] Route creation workflow
+- [x] Announcements
+- [x] Notifications
+- [x] Audit logging
 
 ## Phase 4 — Intelligence
 
-- [ ] Gemini transit assistant
-- [ ] Context-aware route assistance
-- [ ] Delay insights
-- [ ] Transit analytics
+- [x] Gemini transit assistant integration
+- [x] Context-aware route assistance demo
+- [x] ETA prediction demo
+- [x] Transit analytics view
+- [ ] Production ML ETA model
 
 ## Phase 5 — Engineering Quality
 
-- [ ] API test suite
+- [x] API documentation
+- [x] API validation helper tests
+- [x] CI linting and build validation
+- [x] Automated unit-test execution in CI
+- [x] Production Dockerfile and health check
+- [ ] HTTP endpoint integration tests
 - [ ] Frontend component tests
-- [ ] CI validation
-- [ ] Docker deployment
-- [ ] Production PostgreSQL/PostGIS configuration
-- [ ] Observability and error reporting
+- [ ] Dependency and security scanning
+- [ ] Production PostgreSQL/PostGIS runtime integration
+- [ ] Production observability stack
 
 ## Phase 6 — Production Readiness
 
-- [ ] Real GPS/vehicle telemetry integration
+- [ ] Real GPS/vehicle telemetry ingestion
 - [ ] Production authentication
 - [ ] WebSocket/SSE live updates
 - [ ] Mobile/PWA experience
 - [ ] Accessibility audit
 - [ ] Performance optimization
+- [ ] Production deployment
 - [ ] v1.0 release
