@@ -6,7 +6,7 @@ import {
   parseLimit,
   validateCoordinates,
   validatePassengerCount,
-} from './apiValidation.ts';
+} from './apiValidation.js';
 
 test('normalizes search input', () => {
   assert.equal(normalizeSearch('  CBT Central  '), 'cbt central');
