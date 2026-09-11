@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run lint && npm run test && npm run build
+RUN npm run lint && npm test && npm run build
 
 FROM node:20-alpine AS runtime
 
@@ -16,10 +16,8 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 COPY --from=build /app/package.json /app/package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/server.ts ./server.ts
-COPY --from=build /app/src ./src
 
 EXPOSE 3000
 
