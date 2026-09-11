@@ -17,7 +17,7 @@ export function parseLimit(value: unknown, fallback = 100, max = 100): number {
 }
 
 export function validatePassengerCount(value: unknown, capacity: number): value is number {
-  return Number.isInteger(value) && value >= 0 && value <= capacity;
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= capacity;
 }
 
 export function validateCoordinates(lat: number, lng: number): boolean {
